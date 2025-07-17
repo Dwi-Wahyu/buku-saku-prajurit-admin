@@ -1,0 +1,92 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Garjas {
+  id Int @id @default(autoincrement())
+
+  tanggal DateTime @default(now())
+
+  lari    Int   @map("lari")
+  garjasA Float @map("garjas_a")
+
+  pullup     Int?
+  shuttleRun Float  @map("shuttle_run")
+  renang     Int?
+  situp      Int?
+  pushup     Int?
+  pangkat    String
+
+  skorB1  Float @map("skor_b1")
+  skorB2  Float @map("skor_b2")
+  skorB3  Float @map("skor_b3")
+  skorB4  Float @map("skor_b4")
+  garjasB Float @map("garjas_b")
+
+  penilaiId Int  @map("penilai_id")
+  penilai   User @relation(name: "PenilaiToGarjas", fields: [penilaiId], references: [id])
+
+  prajuritId Int  @map("prajurit_id")
+  prajurit   User @relation(name: "PrajuritToGarjas", fields: [prajuritId], references: [id])
+
+  @@map("garjas")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  name      String
+  username  String    @unique
+  password  String
+  avatar    String?
+  lastLogin DateTime? @map("last_login")
+  role      Role // Enum for roles
+
+  profile Profile?
+
+  penilaianGarjasDibuat     Garjas[] @relation(name: "PenilaiToGarjas", map: "penilaian_garjas_dibuat")
+  penilaianGarjasDidapatkan Garjas[] @relation(name: "PrajuritToGarjas", map: "penilaian_garjas_didapatkan")
+
+  @@map("user")
+}
+
+model Profile {
+  id        Int       @id @default(autoincrement())
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  umur         Int
+  jenisKelamin String @map("jenis_kelamin")
+  golongan     Int
+  userId       Int    @unique
+  user         User   @relation(fields: [userId], references: [id])
+
+  pangkat     String
+  beratBadan  Int?   @map("berat_badan")
+  tinggiBadan Int?   @map("tinggi_badan")
+
+  @@map("profile")
+}
+
+enum Role {
+  superadmin
+  admin
+  penilai
+  prajurit
+}
