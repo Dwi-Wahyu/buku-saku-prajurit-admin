@@ -13,6 +13,8 @@
 # testing
 /coverage
 
+secret.md
+
 /public/uploads/avatar/*
 !/public/uploads/avatar/.gitkeep
 !/public/uploads/avatar/default-avatar.jpg

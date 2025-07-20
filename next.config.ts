@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "1gb",
     },
   },
+
+  basePath: "/buku-saku",
+  assetPrefix: "/buku-saku",
 };
 
 export default nextConfig;
