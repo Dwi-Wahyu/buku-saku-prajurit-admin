@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Figtree } from "next/font/google";
 import "./globals.css";
+
 import { Toaster } from "@/components/ui/sonner";
 
 import NextTopLoader from "nextjs-toploader";

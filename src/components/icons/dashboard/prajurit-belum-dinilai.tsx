@@ -1,5 +1,3 @@
-import { CustomIconProps } from "@/types/icon";
-
 export function IconPrajuritBelumDinilai() {
   return (
     <svg

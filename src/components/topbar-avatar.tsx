@@ -12,7 +12,8 @@ import {
 import { IconBell, IconDoorExit } from "@tabler/icons-react";
 import { CircleUser } from "lucide-react";
 import { Button } from "./ui/button";
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import Link from "next/link";
 
 export default function TopbarAvatar() {
   function handleLogout() {
@@ -21,25 +22,35 @@ export default function TopbarAvatar() {
     });
   }
 
+  const session = useSession();
+
+  if (!session.data) {
+    return null;
+  }
+
+  const ADMIN_URL = process.env.NEXT_PUBLIC_ADMIN_URL;
+
   return (
     <div className="flex gap-3">
       <DropdownMenu>
         <DropdownMenuTrigger className="flex gap-2 items-center">
           <h1 className="hidden md:block font-semibold text-sm">
-            Akun SuperAdmin
+            {session.data.user.name}
           </h1>
           <Avatar className="size-8">
             <AvatarImage
-              src="https://cdn.shadcnstudio.com/ss-assets/avatar/avatar-5.png"
+              src={ADMIN_URL + "/" + session.data.user.avatar}
               alt="Hallie Richards"
             />
             <AvatarFallback className="text-xs">HR</AvatarFallback>
           </Avatar>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuItem>
-            <CircleUser />
-            Profil
+          <DropdownMenuItem asChild>
+            <Link href={"/admin/profil/"}>
+              <CircleUser />
+              Profil
+            </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={handleLogout}>

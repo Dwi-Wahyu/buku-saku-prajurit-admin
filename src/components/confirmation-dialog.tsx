@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { AlertCircle } from "lucide-react"; // Menggunakan ikon peringatan untuk konfirmasi
+import { IconLoader } from "@tabler/icons-react";
 
 interface ConfirmationDialogProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ interface ConfirmationDialogProps {
   onConfirm: () => void; // Fungsi yang dipanggil saat tombol konfirmasi ditekan
   title: string;
   message: string;
+  isLoading?: boolean;
   confirmButtonText?: string; // Teks opsional untuk tombol konfirmasi
   cancelButtonText?: string; // Teks opsional untuk tombol batal
 }
@@ -27,6 +29,7 @@ export function ConfirmationDialog({
   onConfirm,
   title,
   message,
+  isLoading = false,
   confirmButtonText = "Konfirmasi", // Nilai default
   cancelButtonText = "Batal", // Nilai default
 }: ConfirmationDialogProps) {
@@ -53,9 +56,14 @@ export function ConfirmationDialog({
           </Button>
           <Button
             onClick={onConfirm}
+            disabled={isLoading}
             className="w-full sm:w-auto rounded-full mb-2 sm:mb-0 bg-secondary text-secondary-foreground hover:bg-secondary/90"
           >
-            {confirmButtonText}
+            {isLoading ? (
+              <IconLoader className="animate-spin" />
+            ) : (
+              confirmButtonText
+            )}
           </Button>
         </DialogFooter>
       </DialogContent>

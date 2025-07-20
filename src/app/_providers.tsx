@@ -1,5 +1,4 @@
-// src/app/providers.tsx
-"use client"; // Ini adalah Client Component
+"use client";
 
 import * as React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -14,9 +13,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            // Durasi data dianggap "fresh" sebelum dianggap "stale"
-            staleTime: 1000 * 60 * 5, // 5 menit
-            refetchOnWindowFocus: false, // Opsi populer untuk menghindari refetch berlebihan
+            staleTime: 1000 * 60 * 5,
+            refetchOnWindowFocus: false,
           },
         },
       })
@@ -28,7 +26,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
         <NuqsAdapter>
           <BreadcrumbProvider>{children}</BreadcrumbProvider>
         </NuqsAdapter>
-        {/* Devtools hanya akan muncul di development mode */}
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </SessionProvider>

@@ -1,7 +1,12 @@
-export default function Kesatuan() {
-  return (
-    <div>
-      <h1>Kesatuan</h1>
-    </div>
-  );
+import { KesatuanForm } from "./kesatuan-form";
+import { getKesatuanData } from "./queries";
+
+export default async function KesatuanPage() {
+  const kesatuan = await getKesatuanData();
+
+  if (!kesatuan) {
+    return <KesatuanForm initialData={null} />;
+  }
+
+  return <KesatuanForm initialData={kesatuan} />;
 }

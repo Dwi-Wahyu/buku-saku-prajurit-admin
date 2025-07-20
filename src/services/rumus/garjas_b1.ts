@@ -1,9 +1,9 @@
-function hitungNilaiGarjasB1(
+export function hitungNilaiGarjasB1(
   jenis_kelamin: string,
   golongan: number,
   pullups: number
 ) {
-  var garjas_b1;
+  let garjas_b1;
 
   if (jenis_kelamin == "Pria") {
     if (golongan == 1) {

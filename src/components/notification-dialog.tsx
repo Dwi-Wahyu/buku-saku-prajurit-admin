@@ -1,15 +1,14 @@
-// components/NotificationDialog.tsx
-import React from "react";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { CheckCircle, XCircle, Info } from "lucide-react"; // Impor ikon
+import { CheckCircle, XCircle, Info, Check } from "lucide-react";
+import { Badge } from "./ui/badge";
+import { IconCopy } from "@tabler/icons-react";
+import { Button } from "./ui/button";
 
 type NotificationVariant = "success" | "error" | "info";
 
@@ -18,6 +17,7 @@ interface NotificationDialogProps {
   onClose: () => void;
   title: string;
   message: string;
+  url?: string;
   variant: NotificationVariant;
 }
 
@@ -27,60 +27,77 @@ export function NotificationDialog({
   title,
   message,
   variant,
+  url,
 }: NotificationDialogProps) {
+  const [copied, setCopied] = useState(false);
+
   const getVariantStyles = (variant: NotificationVariant) => {
     switch (variant) {
       case "success":
-        return "bg-primary text-primary-foreground border-primary";
+        return "text-primary";
       case "error":
-        return "bg-destructive text-destructive-foreground border-destructive";
+        return "text-destructive";
       case "info":
-        return "bg-muted text-muted-foreground border-muted";
-      default:
-        return "bg-background text-foreground border-border";
+        return "text-muted";
     }
   };
 
   const getVariantIcon = (variant: NotificationVariant) => {
     switch (variant) {
       case "success":
-        return <CheckCircle className="h-16 w-16 text-primary-foreground" />; // Ikon centang untuk sukses
+        return <CheckCircle className="h-16 w-16 text-primary" />;
       case "error":
-        return <XCircle className="h-16 w-16 text-destructive-foreground" />; // Ikon silang untuk gagal
+        return <XCircle className="h-16 w-16 text-destructive" />;
       case "info":
-        return <Info className="h-16 w-16 text-muted-foreground" />; // Ikon info untuk info
+        return <Info className="h-16 w-16 text-muted" />;
       default:
         return null;
     }
   };
+
+  async function copyToClipboard() {
+    if (!url) return;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000); // reset after 2 seconds
+    } catch (err) {
+      console.error("Failed to copy: ", err);
+    }
+  }
 
   const variantStyles = getVariantStyles(variant);
   const variantIcon = getVariantIcon(variant);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className={`sm:max-w-[425px] ${variantStyles}`}>
-        <DialogHeader className="flex flex-col items-center text-center">
-          <DialogTitle className="text-xl font-bold mt-2">{title}</DialogTitle>
-          {variantIcon} {/* Tampilkan ikon di sini */}
-          <DialogDescription className="text-white">
-            {message}
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter className="flex justify-center">
+      <DialogContent
+        className={`sm:max-w-[425px] flex items-center justify-center flex-col ${variantStyles}`}
+      >
+        <DialogTitle className="text-xl font-bold">{title}</DialogTitle>
+        {variantIcon}
+        <DialogDescription className={`text-center ${variantStyles}`}>
+          {message}
+        </DialogDescription>
+
+        {url && (
           <Button
-            onClick={onClose}
-            className={`mt-4 ${
-              variant === "success"
-                ? "bg-primary-foreground text-primary hover:bg-primary-foreground/90"
-                : variant === "error"
-                ? "bg-destructive-foreground text-destructive hover:bg-destructive-foreground/90"
-                : "bg-muted-foreground text-muted hover:bg-muted-foreground/90"
-            }`}
+            variant={copied ? "secondary" : "outline"}
+            onClick={copyToClipboard}
           >
-            Tutup
+            {copied ? (
+              <>
+                <Check className="h-4 w-4" />
+                Disalin
+              </>
+            ) : (
+              <>
+                <IconCopy className="h-4 w-4" />
+                Salin Tautan Media
+              </>
+            )}
           </Button>
-        </DialogFooter>
+        )}
       </DialogContent>
     </Dialog>
   );

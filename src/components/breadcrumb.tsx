@@ -6,7 +6,6 @@ import { Home } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
@@ -14,7 +13,11 @@ import {
 import { useSidebar } from "./ui/sidebar";
 import { generateBreadcrumbs } from "@/helper/generate-breadcrumbs";
 import { Fragment } from "react"; // Pastikan Fragment diimpor
-import { IconNews } from "@tabler/icons-react";
+import {
+  IconClipboardText,
+  IconNews,
+  IconUserScreen,
+} from "@tabler/icons-react";
 import IconKesatuan from "./icons/kesatuan";
 import IconPrajurit from "./icons/prajurit";
 
@@ -36,9 +39,11 @@ export function BreadCrumbs() {
                   height={13}
                 />
               )}
+
               {item.label === "Kesatuan" && (
                 <IconKesatuan isBreadcrumbLogo width={"13"} height={"13"} />
               )}
+
               {item.label === "Berita" && (
                 <IconNews
                   style={{ marginBottom: 1, marginRight: 1 }}
@@ -46,8 +51,21 @@ export function BreadCrumbs() {
                   height={13}
                 />
               )}
+
+              {item.label === "Penilaian" && (
+                <IconClipboardText
+                  style={{ marginBottom: 1, marginRight: 1 }}
+                  width={13}
+                  height={13}
+                />
+              )}
+
               {item.label === "Prajurit" && (
                 <IconPrajurit isBreadcrumbLogo width={"13"} height={"13"} />
+              )}
+
+              {item.label === "Manajemen User" && (
+                <IconUserScreen width={"13"} height={"13"} />
               )}
               <BreadcrumbPage>{item.label}</BreadcrumbPage>
             </BreadcrumbItem>

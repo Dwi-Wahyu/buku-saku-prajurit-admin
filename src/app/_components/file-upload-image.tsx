@@ -18,11 +18,21 @@ import { toast } from "sonner";
 export function FileUploadImage({
   onFilesChange,
   multiple = true,
+  initialPreviewUrl,
 }: {
   onFilesChange?: (files: File[]) => void;
   multiple?: boolean;
+  initialPreviewUrl?: string | null;
 }) {
   const [files, setFiles] = React.useState<File[]>([]);
+
+  const [showInitialPreview, setShowInitialPreview] = React.useState<boolean>(
+    !!initialPreviewUrl
+  );
+
+  React.useEffect(() => {
+    setShowInitialPreview(!!initialPreviewUrl && files.length === 0);
+  }, [initialPreviewUrl, files.length]);
 
   const onFileReject = React.useCallback((file: File, message: string) => {
     toast(message, {
@@ -32,13 +42,33 @@ export function FileUploadImage({
     });
   }, []);
 
-  React.useEffect(() => {
-    onFilesChange?.(files);
-  }, [files, onFilesChange]);
+  const handleFileUploadChange = React.useCallback(
+    (newFiles: File[]) => {
+      setFiles(newFiles);
+      if (newFiles.length > 0) {
+        setShowInitialPreview(false);
+      } else {
+        setShowInitialPreview(!!initialPreviewUrl);
+      }
+      onFilesChange?.(newFiles);
+    },
+    [onFilesChange, initialPreviewUrl]
+  );
 
   const handleDelete = () => {
     setFiles([]);
+    setShowInitialPreview(!!initialPreviewUrl);
+    onFilesChange?.([]);
   };
+
+  const previewUrl =
+    files.length > 0
+      ? URL.createObjectURL(files[0])
+      : showInitialPreview && initialPreviewUrl
+      ? initialPreviewUrl
+      : null;
+
+  const hasPreview = previewUrl !== null;
 
   return (
     <div>
@@ -47,13 +77,13 @@ export function FileUploadImage({
         maxSize={5 * 1024 * 1024}
         className="w-full"
         value={files}
-        onValueChange={setFiles}
+        onValueChange={handleFileUploadChange}
         onFileReject={onFileReject}
         multiple={multiple}
         accept="image/*"
       >
         <FileUploadDropzone className="relative min-h-48 border border-dashed rounded-md p-4 flex items-center justify-center text-center">
-          {multiple || files.length === 0 ? (
+          {multiple ? (
             <div className="flex flex-col items-center gap-1">
               <div className="flex items-center justify-center rounded-full border p-2.5">
                 <Upload className="size-6 text-muted-foreground" />
@@ -65,16 +95,28 @@ export function FileUploadImage({
                   : "Or click to browse (only 1 file, up to 5MB)"}
               </p>
             </div>
-          ) : (
+          ) : hasPreview ? (
             <div className="flex flex-col items-center justify-center gap-2">
               <img
-                src={URL.createObjectURL(files[0])}
+                src={previewUrl!}
                 alt="Preview"
                 className="max-h-28 object-contain rounded-md"
               />
-              <FileUploadItem value={files[0]}>
-                <FileUploadItemMetadata />
-              </FileUploadItem>
+              {files.length > 0 && (
+                <FileUploadItem value={files[0]}>
+                  <FileUploadItemMetadata />
+                </FileUploadItem>
+              )}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-1">
+              <div className="flex items-center justify-center rounded-full border p-2.5">
+                <Upload className="size-6 text-muted-foreground" />
+              </div>
+              <p className="font-medium text-sm">Drag & drop files here</p>
+              <p className="text-muted-foreground text-xs">
+                Or click to browse (only 1 file, up to 5MB)
+              </p>
             </div>
           )}
           <FileUploadTrigger asChild></FileUploadTrigger>
@@ -97,7 +139,7 @@ export function FileUploadImage({
         )}
       </FileUpload>
 
-      {!multiple && files.length === 1 && (
+      {!multiple && hasPreview && (
         <div className="mt-2 flex justify-center">
           <Button
             type="button"

@@ -9,6 +9,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar";
 import { IconType } from "@/types/icon";
+import Link from "next/link";
 
 export function NavPenilaian({
   items,
@@ -34,10 +35,10 @@ export function NavPenilaian({
               tooltip={item.title}
               onClick={() => setLinkActive(item.url)}
             >
-              <a href={item.url}>
+              <Link href={item.url}>
                 <item.icon />
                 <span>{item.title}</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         ))}

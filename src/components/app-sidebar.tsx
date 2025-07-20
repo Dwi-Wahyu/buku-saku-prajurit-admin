@@ -1,7 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
-import { IconClipboardText, IconNews } from "@tabler/icons-react";
+import {
+  IconBuilding,
+  IconClipboardText,
+  IconNews,
+  IconUserScreen,
+} from "@tabler/icons-react";
 
 import { NavPenilaian } from "@/components/nav-penilaian";
 import { NavMain } from "@/components/nav-main";
@@ -18,6 +22,7 @@ import Image from "next/image";
 import IconKesatuan from "./icons/kesatuan";
 import { LayoutDashboard } from "lucide-react";
 import IconPrajurit from "./icons/prajurit";
+import { Scroller } from "./ui/scroller";
 
 const data = {
   user: {
@@ -34,7 +39,7 @@ const data = {
     {
       title: "Kesatuan",
       url: "/admin/kesatuan",
-      icon: IconKesatuan,
+      icon: IconBuilding,
     },
     {
       title: "Data Prajurit",
@@ -42,14 +47,38 @@ const data = {
       icon: IconPrajurit,
     },
     {
+      title: "Manajemen User",
+      url: "/admin/manajemen-user",
+      icon: IconUserScreen,
+    },
+    {
       title: "Berita",
       url: "/admin/berita",
       icon: IconNews,
+      child: [
+        {
+          title: "Daftar Berita",
+          url: "/admin/berita",
+        },
+        {
+          title: "Tambah Berita",
+          url: "/admin/berita/create",
+        },
+        {
+          title: "Media Berita",
+          url: "/admin/berita/media",
+        },
+      ],
     },
   ],
   navClouds: [],
   navSecondary: [],
   penilaian: [
+    {
+      title: "Kesegaran Jasmani",
+      url: "/admin/penilaian/kesegaran-jasmani",
+      icon: IconClipboardText,
+    },
     {
       title: "UTP Umum & Jabatan",
       url: "/admin/penilaian/utp-umum-dan-jabatan",
@@ -70,16 +99,11 @@ const data = {
       url: "/admin/penilaian/bak-pistol-15m",
       icon: IconClipboardText,
     },
-    {
-      title: "Kesegaran Jasmani",
-      url: "/admin/penilaian/gasjar",
-      icon: IconClipboardText,
-    },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { open, linkActive } = useSidebar();
+  const { open } = useSidebar();
 
   return (
     <Sidebar collapsible="icon" {...props}>
@@ -105,18 +129,16 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavPenilaian items={data.penilaian} />
+      <SidebarContent className="pb-10 pt-4">
+        <Scroller orientation={"vertical"} hideScrollbar>
+          <NavMain items={data.navMain} />
+          <NavPenilaian items={data.penilaian} />
 
-        <div className="flex w-full justify-center">
-          <SidebarTrigger />
-        </div>
+          <div className="flex w-full justify-center">
+            <SidebarTrigger />
+          </div>
+        </Scroller>
       </SidebarContent>
-
-      {/* <SidebarFooter>
-        <NavUser user={data.user} />
-      </SidebarFooter> */}
     </Sidebar>
   );
 }

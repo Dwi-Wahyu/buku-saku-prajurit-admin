@@ -1,12 +1,6 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
-  output   = "../app/generated/prisma"
+  output   = "../src/app/generated/prisma"
 }
 
 datasource db {
@@ -35,17 +29,19 @@ model Garjas {
   skorB4  Float @map("skor_b4")
   garjasB Float @map("garjas_b")
 
-  penilaiId Int  @map("penilai_id")
-  penilai   User @relation(name: "PenilaiToGarjas", fields: [penilaiId], references: [id])
+  nilaiAkhir Float @map("nilai_akhir")
 
-  prajuritId Int  @map("prajurit_id")
-  prajurit   User @relation(name: "PrajuritToGarjas", fields: [prajuritId], references: [id])
+  penilaiId String @map("penilai_id")
+  penilai   User   @relation(name: "PenilaiToGarjas", fields: [penilaiId], references: [id])
+
+  prajuritId String @map("prajurit_id")
+  prajurit   User   @relation(name: "PrajuritToGarjas", fields: [prajuritId], references: [id])
 
   @@map("garjas")
 }
 
 model User {
-  id        Int       @id @default(autoincrement())
+  id        String    @id @default(uuid())
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
@@ -55,14 +51,31 @@ model User {
   password  String
   avatar    String?
   lastLogin DateTime? @map("last_login")
-  role      Role // Enum for roles
+  role      Role
 
   profile Profile?
 
   penilaianGarjasDibuat     Garjas[] @relation(name: "PenilaiToGarjas", map: "penilaian_garjas_dibuat")
   penilaianGarjasDidapatkan Garjas[] @relation(name: "PrajuritToGarjas", map: "penilaian_garjas_didapatkan")
 
+  kesatuanId String?
+  kesatuan   Kesatuan? @relation(fields: [kesatuanId], references: [id])
+
+  RefreshToken RefreshToken[] @relation(map: "refresh_token")
+
   @@map("user")
+}
+
+model Kesatuan {
+  id        String   @id @default(uuid())
+  nama      String   @unique
+  motto     String?
+  logo      String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  users     User[]
+
+  @@map("kesatuan")
 }
 
 model Profile {
@@ -74,7 +87,7 @@ model Profile {
   umur         Int
   jenisKelamin String @map("jenis_kelamin")
   golongan     Int
-  userId       Int    @unique
+  userId       String @unique @map("user_id")
   user         User   @relation(fields: [userId], references: [id])
 
   pangkat     String
@@ -82,6 +95,53 @@ model Profile {
   tinggiBadan Int?   @map("tinggi_badan")
 
   @@map("profile")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @db.Text()
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  revoked   Boolean  @default(false)
+
+  @@unique([token(length: 191)])
+  @@index([userId])
+  @@map("refresh_token")
+}
+
+model Berita {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  judul     String
+  deskripsi String?
+
+  thumbnail String
+
+  penulis String
+  content String @db.LongText
+
+  like    Int @default(0)
+  dislike Int @default(0)
+
+  @@map("berita")
+}
+
+model MediaBerita {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  deletedAt DateTime? @map("deleted_at")
+
+  urlMedia   String @map("url_media")
+  keterangan String
+
+  @@map("media_berita")
 }
 
 enum Role {

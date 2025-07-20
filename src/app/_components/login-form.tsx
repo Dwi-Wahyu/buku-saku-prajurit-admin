@@ -26,6 +26,7 @@ import { signIn } from "next-auth/react";
 
 import { useRouter } from "nextjs-toploader/app";
 import { useState } from "react";
+import { PasswordInput } from "@/components/password-input";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -97,7 +98,7 @@ export default function LoginForm() {
                 <FormItem>
                   <FormLabel>Kata Sandi</FormLabel>
                   <FormControl>
-                    <Input
+                    <PasswordInput
                       type="password"
                       placeholder="password_anda"
                       {...field}
